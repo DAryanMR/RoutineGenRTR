@@ -11,8 +11,8 @@ But that's not all - if any of your courses overlap, the generator will automati
 
 With this tool, we're hoping to make the scheduling process more manageable and less stressful for everyone. And while our current version generates two routines, we're already working on a third model that removes all courses and creates a schedule from scratch.
 
-We would like to invite all students to use this tool and share their feedback with us. Let's make our academic lives easier together.
-URL: https://joyous-muffled-rabbit.anvil.app/
+We would like to invite all students to use this tool and share their feedback with us. Let's make our academic lives easier together. <br>
+URL: https://joyous-muffled-rabbit.anvil.app/  <br>
 (Course times will be updated once we get the routine)
 
 Thank you!
@@ -21,3 +21,20 @@ Best regards,
 
 Minhaz Mahmud <br>
 Aryan Mashud Raj
+
+# Workflow
+<!-- <img src="images/platform/RoutineGenRTR-Workflow.jpeg" alt="Generator Workflow" width="250"/> -->
+<div style="text-align: center;">
+  <img src="images/platform/RoutineGenRTR-Workflow.jpeg" alt="Generator Workflow" width="400">
+</div>
+
+# Platform
+<div style="display:flex;justify-content:center;">
+  <img src="images/platform/RoutineGenRTR-Platform_1.jpg" width="450" height="250" style="margin-right:10px"/>
+  <img src="images/platform/RoutineGenRTR-Platform_2.jpg" width="450" height="250" style="margin-left:10px"/>
+</div>
+<div style="display:flex;justify-content:center;margin-top:20px;">
+  <img src="images/platform/RoutineGenRTR-Platform_3.jpg" width="450" height="250" style="margin-right:10px"/>
+  <img src="images/platform/RoutineGenRTR-Platform_4.jpg" width="450" height="250" style="margin-left:10px"/>
+</div>
+
