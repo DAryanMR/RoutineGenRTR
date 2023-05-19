@@ -28,7 +28,7 @@ Aryan Mashud Raj
   <img src="images/platform/RoutineGenRTR-Workflow.jpeg" alt="Generator Workflow" width="400">
 </div>
 
-# Platform
+# Interface
 <div style="display:flex;justify-content:center;">
   <img src="images/platform/RoutineGenRTR-Platform_1.jpg" width="400" height="200" style="margin-right:10px"/>
   <img src="images/platform/RoutineGenRTR-Platform_2.jpg" width="400" height="200" style="margin-left:10px"/>
