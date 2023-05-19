@@ -8,7 +8,6 @@ Original file is located at
 
 # Default__System__
 """
-
 # @title Setup__base__routine__: Database
 base_routine = {
     "1A": [[[("MED", "10:00-11:30")], [("PF", "11:30-13:00")], [("DIC", "13:30-15:00")]],
@@ -290,25 +289,17 @@ base_routine = {
 
 #@title Functions
 '''
-Necessary functions to sort courses using time_steps
+functions to sort courses using time_steps
 '''
-
-
 def Sort(sub_li):
     sub_li.sort(key=lambda x: x[1])
     return sub_li
-
-
 def R_sort(sub_li):
     sub_li.sort(key=lambda x: x[0])
     return sub_li
-
-
 '''
 Function that counts overlap time
 '''
-
-
 def CalculateOverlapTime(t1, t2):
     hour1, minute1 = int(t1.split(':')[0]), int(t1.split(':')[1])
     hour2, minute2 = int(t2.split(':')[0]), int(t2.split(':')[1])
@@ -325,12 +316,9 @@ def CalculateOverlapTime(t1, t2):
                 min3 += 1
     minutes = min1 + min2 + min3
     return (minutes)
-
 '''
 Function to calculate available time-slots of a day
 '''
-
-
 def CalculateFreeTimeDay(l):
     time_range = []
     start_val, end_val = 830, 1730
@@ -374,8 +362,6 @@ def CalculateFreeTimeDay(l):
                 time_range.append([checkpoint1, checkpoint2])
     R_sort(time_range)
     return (time_range)
-
-
 '''
 extending that to calculate free-time-slots of the whole week
 '''
@@ -386,14 +372,11 @@ test_results = {
     'Tue': [],
     'Wed': []
 }
-
-
 def CalculateFreeTimeWeek(week):
     for day, times in week.items():
         test_results[day] = CalculateFreeTimeDay(times)
         # print(f'{day}:', test_results[day])
-
-
+# Removing overlapped courses
 def rem__ov__crs(routine, ov_crs_list, comp_list_, fn_time_list_):
     for day, val in routine.items():
         removing_crs_ = []
@@ -412,7 +395,7 @@ def rem__ov__crs(routine, ov_crs_list, comp_list_, fn_time_list_):
             comp_list_[day].remove(cl_rmv_)
             fn_time_list_[day].remove(ftl_rmv_)
     return routine, ov_crs_list, comp_list_, fn_time_list_
-
+# Getting free-time-slots
 def copy_free_time_slots(routine, routine_copy):
     CalculateFreeTimeWeek(routine)
     for k, v in test_results.items():
@@ -420,100 +403,13 @@ def copy_free_time_slots(routine, routine_copy):
         for i in range(len(v)):
             routine_copy[k].append(v[i])
     return routine_copy
-
-# def find_alt_section(ov_crs_list, free_time_list):
-#     rec_crs_ = {}
-#     cnt_curr_, cnt_rec_ = {}, {}
-#     curr_list_, cmp_list_ = [], []
-#     count_exception_ = 0 
-#     for key, value in base_routine.items():
-#         for i in range(len(value)):
-#             curr_day = value[i]
-#             for j in range(len(curr_day)):
-#                 # if course-slot is not empty
-#                 if curr_day[j][0] != ():
-#                     # take current course, time and sections
-#                     curr_crs, curr_time, curr_sec = curr_day[j][0][0], curr_day[j][0][1], key
-#                     # concatenate course and section as target
-#                     curr_tar_ = curr_crs + ' ' + curr_sec
-#                     # if target is not in current list
-#                     if curr_tar_ not in curr_list_:
-#                         # append it to current list and set CountBaseRoutine[target] = 1
-#                         curr_list_.append(curr_tar_)
-#                         cnt_curr_[curr_tar_] = 1
-#                     else:
-#                         # else increment CountBaseRoutine[target] by 1
-#                         cnt_curr_[curr_tar_] += 1
-#                     # for the post-appeared-courses
-#                     for k in range(len(ov_crs_list)):
-#                         # take that instance of overlapped_course and section
-#                         ov_crs, ov_sec = ov_crs_list[k][0].split(' ')[0], ov_crs_list[k][0].split(' ')[1]
-#                         # if current_course matches the overlapped_course and doesn't match overlapped_section
-#                         if curr_crs == ov_crs and curr_sec != ov_sec:  
-#                             # take the start & end times of that course             
-#                             curr_st_, curr_end_ = int(''.join(curr_time.split('-')[0].split(':'))), int(''.join(curr_time.split('-')[1].split(':')))
-#                             # for all the days of free-time-slots
-#                             for v in range(len(free_time_list.values())):
-#                                 # for each day's available time chunks
-#                                 for b in range(len(list(free_time_list.values())[v])):
-#                                     # if free-time-slot's day matches base__routine's day 
-#                                     if v == i:
-#                                         # that that instance of free-time-slot's start & end time
-#                                         free_time_st_ = int(list(free_time_list.values())[v][b][0])
-#                                         free_time_end_ = int(list(free_time_list.values())[v][b][1]) 
-#                                         # if StartTime(current_course) and EndTime(current_course) is within
-#                                         # StartTime(free_slot) and EndTime(free_slot)                                
-#                                         if curr_st_ >= free_time_st_ and curr_end_ <= free_time_end_:
-#                                             # target is now that course & section
-#                                             curr_tar_ = curr_crs + ' ' + curr_sec
-#                                             # if target is not in comparison_list
-#                                             if curr_tar_ not in cmp_list_:
-#                                                 # append it and set CountRecommend[target] = 1
-#                                                 cmp_list_.append(curr_tar_)
-#                                                 cnt_rec_[curr_tar_] = 1
-#                                             # else increment CountRecommend[target] by 1
-#                                             else:
-#                                                 cnt_rec_[curr_tar_] += 1 
-#                                             continue 
-#                                         ### NEW ELEMENT ###
-#                                         else:
-#                                             if count_exception_ < 1:
-#                                                 if curr_st_ >= (free_time_st_ - 30) and curr_end_ <= free_time_end_:
-#                                                     curr_tar_ = curr_crs + ' ' + curr_sec
-#                                                     if curr_tar_ not in cmp_list_:
-#                                                         cmp_list_.append(curr_tar_)
-#                                                         if len(cnt_rec_) <= 0:
-#                                                             cnt_rec_[curr_tar_] = 1
-#                                                         else:
-#                                                             cnt_rec_[curr_tar_] += 1
-#                                                     count_exception_ = 1
-#                                                 elif curr_st_ >= free_time_st_ and curr_end_ <= (free_time_end_ + 30):
-#                                                     curr_tar_ = curr_crs + ' ' + curr_sec
-#                                                     if curr_tar_ not in cmp_list_:
-#                                                         cmp_list_.append(curr_tar_)
-#                                                         if len(cnt_rec_) <= 0:
-#                                                             cnt_rec_[curr_tar_] = 1
-#                                                         else:
-#                                                             cnt_rec_[curr_tar_] += 1
-#                                                     count_exception_ = 1
-#     '''
-#     identifying recommended courses
-#     '''                                                
-#     # For each courses in CountRecommend[course] and their counts
-#     for k, v in cnt_rec_.items():
-#         # if CountRecommend[course] matches CountBaseRoutine[course]
-#         if cnt_rec_[k] == cnt_curr_[k]:
-#             # mark that course as Recommended
-#             rec_crs_[k] = True                                                
-#     return rec_crs_, cnt_curr_, cnt_rec_, curr_list_, cmp_list_, count_exception_
-
+# Finding alternate sections
 def find_alt_section(ov_crs_list, free_time_list):
     rec_crs_ = {}
     curr_list_, cmp_list_ = [], []
     exception_list = []
     for key, value in base_routine.items():
         for i in range(len(value)): # track of day
-            
             curr_day = value[i]
             for j in range(len(curr_day)):
                 if curr_day[j][0] != ():
@@ -533,22 +429,16 @@ def find_alt_section(ov_crs_list, free_time_list):
                                                 if curr_st_ >= free_time_st_ and curr_end_ <= free_time_end_:
                                                     curr_tar_ = curr_crs + ' ' + curr_sec
                                                     cmp_list_.append(curr_tar_)
-                                                    # print('1st if:', curr_tar_)
                                                     if curr_st_ == free_time_st_ and curr_end_ == free_time_end_:
                                                         # print('Perfect fit:', d, curr_tar_, free_time_list[d][t])
                                                         free_time_list[d].remove(free_time_list[d][t])
                                                     else:
                                                         # print('Loose fit:', d, curr_crs, curr_sec, curr_st_, curr_end_, curr_tar_, free_time_list[d][t], [curr_end_, free_time_end_])
                                                         if curr_st_ > free_time_st_ and curr_end_ == free_time_end_:
-                                                            # free_time_list[d][t] = all_list.append([free_time_st_, curr_st_])
                                                             free_time_list[d][t] = [free_time_st_, curr_st_]
-                                                            # print([free_time_st_, curr_st_])
                                                         elif curr_st_ > free_time_st_ and curr_end_ < free_time_end_:                                  
                                                             free_time_list[d][t] = [free_time_st_, curr_st_]
                                                             free_time_list[d].append([curr_end_, free_time_end_])
-                                                            # print([free_time_st_, curr_st_])
-                                                            # print([curr_end_, free_time_end_])
-                                                            # print(free_time_list[d])
                                                     break
                                                 else:
                                                     if len(exception_list) <= 0:
@@ -572,15 +462,12 @@ def find_alt_section(ov_crs_list, free_time_list):
                                                             break
     '''
     identifying recommended courses
-    '''
-                                                    
+    '''  
     # For each courses in CountRecommend[course] and their counts
     for Cs in cmp_list_:
         fn_cnt = 0
-        #print(Cs)
         if cmp_list_.count(Cs) == curr_list_.count(Cs):
-            rec_crs_[Cs] = True       
-            #print(Cs, list(rec_crs_.keys())) 
+            rec_crs_[Cs] = True
         recs_list = list(rec_crs_.keys())
         for w in range(len(recs_list)):
             if Cs.split(' ')[0] in recs_list[w].split(' ')[0]:
@@ -588,7 +475,7 @@ def find_alt_section(ov_crs_list, free_time_list):
         if fn_cnt > 1:
             del rec_crs_[Cs]                                    
     return rec_crs_, curr_list_, cmp_list_, exception_list
-
+# Adding updated courses 
 def append_alt_crs(rec__crs__, routine, ftl):
     '''
     appending recommended-courses to the routine
@@ -613,38 +500,32 @@ def append_alt_crs(rec__crs__, routine, ftl):
                         if ap_crs_ == br_crs_:
                             # whichever day matches append that course to model's final_routine's day and sort the values 
                             if v == 0:
-                                # print([f'{br_crs_} {sec}' , br_time_], routine['Sat'], [f'{br_crs_} {sec}' , br_time_] not in routine['Sat'])
                                 if [f'{br_crs_} {sec}' , br_time_] not in routine['Sat']:
                                     routine['Sat'].append([f'{br_crs_} {sec}' , br_time_])
                                     ftl['Sat'].append([br_st_, br_time_]) 
                                     R_sort(ftl['Sat']) 
                             if v == 1:
-                                # print([f'{br_crs_} {sec}' , br_time_], routine['Sun'], [f'{br_crs_} {sec}' , br_time_] not in routine['Sun'])
                                 if [f'{br_crs_} {sec}' , br_time_] not in routine['Sun']:
                                     routine['Sun'].append([f'{br_crs_} {sec}' , br_time_])
                                     ftl['Sun'].append([br_st_, br_time_])  
                                     R_sort(ftl['Sun']) 
                             if v == 2:
-                                # print([f'{br_crs_} {sec}' , br_time_], routine['Mon'], [f'{br_crs_} {sec}' , br_time_] not in routine['Mon'])
                                 if [f'{br_crs_} {sec}' , br_time_] not in routine['Mon']:
                                     routine['Mon'].append([f'{br_crs_} {sec}' , br_time_])
                                     ftl['Mon'].append([br_st_, br_time_])  
                                     R_sort(ftl['Mon']) 
                             if v == 3:
-                                # print([f'{br_crs_} {sec}' , br_time_], routine['Tue'], [f'{br_crs_} {sec}' , br_time_] not in routine['Tue'])
                                 if [f'{br_crs_} {sec}' , br_time_] not in routine['Tue']:
                                     routine['Tue'].append([f'{br_crs_} {sec}' , br_time_])
                                     ftl['Tue'].append([br_st_, br_time_])  
                                     R_sort(ftl['Tue']) 
                             if v == 4:
-                                # print([f'{br_crs_} {sec}' , br_time_], routine['Wed'], [f'{br_crs_} {sec}' , br_time_] not in routine['Wed'])
                                 if [f'{br_crs_} {sec}' , br_time_] not in routine['Wed']:                                
                                     routine['Wed'].append([f'{br_crs_} {sec}' , br_time_])
                                     ftl['Wed'].append([br_st_, br_time_])  
                                     R_sort(ftl['Wed']) 
     '''
     Converting time to human-readable format
-    we did this before as well, nothing new..
     '''
     for day, time in routine.items():
         for time_steps in range(len(time)):
@@ -658,7 +539,7 @@ def append_alt_crs(rec__crs__, routine, ftl):
             routine[day][time_steps][1] = proper_time
 
     return routine, ftl
-
+# Creting a printout of the dummy-routine
 def print_out(routine, dr):
     for day, courses in routine.items():
         for i in range(len(courses)):
@@ -677,7 +558,7 @@ import anvil.server
 # anvil.server.connect("BXTNSNYRACX3BJ7TR7536LXV-KVOQB6A2U6UCKI5D")
 anvil.server.connect("server_P7MKQDTZXWFQ5LDPKJSHHUJI-VCA3RIYMG7DSECB3")
 
-
+# Sending list of all courses to client-side
 @anvil.server.callable
 def get_all_courses():
     sem_list = list(base_routine.keys())
@@ -685,7 +566,6 @@ def get_all_courses():
     for i in range(8):
         sem = i+1
         all_courses.append(sem)
-        # print(sem)
         if f"{sem}A" in sem_list:
             visited = []
             for days in range(len(base_routine[f"{sem}A"])):
@@ -694,7 +574,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}A"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " A")
                             all_courses.append(f'{current_course} {sem}A')
         if f"{sem}A1" in sem_list:
             visited = []
@@ -704,7 +583,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}A1"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " A1")
                             all_courses.append(f'{current_course} {sem}A1')
         if f"{sem}A2" in sem_list:
             visited = []
@@ -714,7 +592,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}A2"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " A2")
                             all_courses.append(f'{current_course} {sem}A2')
         if f"{sem}B" in sem_list:
             visited = []
@@ -724,7 +601,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}B"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " B")
                             all_courses.append(f'{current_course} {sem}B')
         if f"{sem}B1" in sem_list:
             visited = []
@@ -734,7 +610,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}B1"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " B1")
                             all_courses.append(f'{current_course} {sem}B1')
         if f"{sem}B2" in sem_list:
             visited = []
@@ -744,7 +619,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}B2"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " B2")
                             all_courses.append(f'{current_course} {sem}B2')
         if f"{sem}C" in sem_list:
             visited = []
@@ -754,7 +628,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}C"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " C")
                             all_courses.append(f'{current_course} {sem}C')
         if f"{sem}C1" in sem_list:
             visited = []
@@ -764,7 +637,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}C1"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " C1")
                             all_courses.append(f'{current_course} {sem}C1')
         if f"{sem}C2" in sem_list:
             visited = []
@@ -774,7 +646,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}C2"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " C2")
                             all_courses.append(f'{current_course} {sem}C2')
         if f"{sem}D" in sem_list:
             visited = []
@@ -784,7 +655,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}D"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " D")
                             all_courses.append(f'{current_course} {sem}D')
         if f"{sem}D1" in sem_list:
             visited = []
@@ -794,7 +664,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}D1"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " D1")
                             all_courses.append(f'{current_course} {sem}D1')
         if f"{sem}D2" in sem_list:
             visited = []
@@ -804,7 +673,6 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}D2"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " D2")
                             all_courses.append(f'{current_course} {sem}D2')
         if f"{sem}E" in sem_list:
             visited = []
@@ -814,11 +682,10 @@ def get_all_courses():
                         current_course = base_routine[f"{sem}E"][days][time_steps][0][0]
                         if current_course not in visited and not current_course == ():
                             visited.append(current_course)
-                            # print(current_course, " E")
                             all_courses.append(f'{current_course} {sem}E')
     return all_courses
 
-
+# Generating default routine
 @anvil.server.callable
 def generate_default_routine(user_choice):
     sections, courses = [], []
@@ -826,9 +693,6 @@ def generate_default_routine(user_choice):
     for items in user_choice:
         courses.append(items.split(' ')[0])
         sections.append(items.split(' ')[1])
-
-    # final_routine, dummy_routine, final_time_list, comparison_list, overlap_list, overlap_days, overlapped_courses_1, overlapped_courses_2
-
     '''
     Creating blueprints
     '''
@@ -962,6 +826,7 @@ def generate_default_routine(user_choice):
                             R_sort(comparison_list['Wed'])
     '''
     Converting course times back to their human readable format
+    we did this before as well, nothing new..
     '''
     for day, info in final_routine.items():
         for readable_info in range(len(info)):
@@ -969,8 +834,6 @@ def generate_default_routine(user_choice):
     '''
     Finally, checking for overlaps & printing the routine
     '''
-    # print('\n\n\n\n\n')
-    # print('Routine:')
     overlapped_courses_1 = []
     overlapped_courses_2 = []
     for day, time in comparison_list.items():
@@ -986,7 +849,6 @@ def generate_default_routine(user_choice):
                     compare_start_o, compare_end_o = final_time_list[day][iterations][1].split(
                         '-')[0], final_time_list[day][iterations][1].split('-')[1]
                     if compare_start <= start_time < compare_end:  # overlap detection
-                        # print(f"{comparing_course}->{current_course}")
                         overlap_list[day].append([current_course, comparing_course, str(
                             CalculateOverlapTime(current_start_o, compare_end_o))])
                         if [comparing_course] not in overlapped_courses_1:
@@ -998,14 +860,10 @@ def generate_default_routine(user_choice):
             dummy_routine[day][time_steps] = final_routine[day][time_steps][0] + \
                 ' ' + final_routine[day][time_steps][1]
         if overlap_days[day] == False:
-            # print(f'{day}:', *dummy_routine[day])
             dj_day.append(day)
             dj_course.append(dummy_routine[day])
         else:
             for i in range(len(overlap_list[day])):
-                # overlap_list[day][i] = overlap_list[day][i][0] + ',' + \
-                #     overlap_list[day][i][1] + ' with ' + \
-                #     overlap_list[day][i][2] + ' minutes'
                 overlap_list[day][i] = overlap_list[day][i][0] + ',' + \
                     overlap_list[day][i][1] + ' ' + \
                     overlap_list[day][i][2] + ' minutes'
@@ -1015,7 +873,7 @@ def generate_default_routine(user_choice):
             dj_course.append(dummy_routine[day])
     return dj_day, dj_course, dj_msg, final_routine, comparison_list, final_time_list, overlapped_courses_1, overlapped_courses_2
 
-
+# Creating structures for calculation
 @anvil.server.callable
 def create_structures(fr, cl, ftl):
     '''
@@ -1096,7 +954,6 @@ def create_structures(fr, cl, ftl):
         'Tue': [],
         'Wed': [],
     }
-
     '''
     copying values to the blueprints
     '''
@@ -1117,7 +974,7 @@ def create_structures(fr, cl, ftl):
 
     return trial_routine_1, trial_routine_2, comp_list_1, comp_list_2, fn_time_l_1, fn_time_l_2, test_res_1, test_res_2, dr_1, dr_2
 
-
+# Generating updated routine (One for All)
 @anvil.server.callable
 def generate_updated_routine(trout, oc, cl, ftl, tres):
     trout, oc, cl, ftl = rem__ov__crs(trout, oc, cl, ftl)
