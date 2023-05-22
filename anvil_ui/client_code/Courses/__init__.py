@@ -35,7 +35,7 @@ class Courses(CoursesTemplate):
 
     def load_courses(self):
         init_label = Label(
-            text='List of all courses from Semester 1-8', font_size='20')
+            text='List of all courses from Semester 1-8', font_size='20', bold=True)
         self.content_panel.add_component(init_label)
 
         # Add count label to count_panel
@@ -66,7 +66,7 @@ class Courses(CoursesTemplate):
         columns = [ColumnPanel(width="auto") for _ in range(8)]
         for i, courses in enumerate(courses_by_semester):
             label = Label(text=f"Semester {i+1}",
-                          font_size="16", align="center")
+                          font_size="16", align="center", bold=True)
             sem_title_panel = ColumnPanel(border="1px solid #90EE90")
             sem_title_panel.add_component(label)
             columns[i].add_component(sem_title_panel)
@@ -99,7 +99,7 @@ class Courses(CoursesTemplate):
         self.generate.visible = len(self.checked_values) > 0
 
     def get_total_courses(self):
-        default_routine_init_label = Label(text="### Before analyzing ###")
+        default_routine_init_label = Label(text="### Before analyzing ###", bold=True)
         global default_total_list
         default_total_list = []
         for checkbox_value in self.checked_values:
@@ -188,7 +188,7 @@ class Courses(CoursesTemplate):
 
             # Add a label for the day to the day panel
             day_label = Label(border="1px solid black", text=day,
-                              width='80px', align="left", font_size="3")
+                              width='80px', align="left", font_size="3", bold=True)
             day_label.tag.style = "border-right: 1px solid black;"
             day_panel.add_component(day_label)
 
@@ -223,7 +223,7 @@ class Courses(CoursesTemplate):
 
         # If error panel is empty let user know that their routine is all set
         if len(err_panel.get_components()) == 0:
-            h_label = Label(text='Reports', align='left', font_size="5")
+            h_label = Label(text='Reports', align='left', font_size="5", bold=True)
             h_msg = "You're routine is all set."
             healthy_label = Label(text=h_msg, align='left', font_size="5")
             report_section = ColumnPanel()
@@ -231,7 +231,7 @@ class Courses(CoursesTemplate):
             report_section.add_component(healthy_label)
         # else add the err_panel to reports section
         else:
-            h_label = Label(text='Overlaps', align='left', font_size="5")
+            h_label = Label(text='Overlaps', align='left', font_size="5", bold=True)
             report_section = ColumnPanel()
             report_section.add_component(h_label)
             report_section.add_component(err_panel)
@@ -279,7 +279,7 @@ class Courses(CoursesTemplate):
         if missing_courses != []:
             missing_courses_str = ", ".join(missing_courses)
             missing_courses_label_msg = f"Missing Courses: {missing_courses_str}"
-            missing_courses_label = Label(text=missing_courses_label_msg)
+            missing_courses_label = Label(text=missing_courses_label_msg, foreground="red")
             # print(missing_courses_label.text)
 
         # Create a label widget for new course count
@@ -318,7 +318,7 @@ class Courses(CoursesTemplate):
 
         # Add a label for the updated routine from the first model
         model_1_label = Label(
-            text='Updated Routine from 1st Model', align='left')
+            text='Updated Routine from 1st Model', align='left', bold=True)
         model_1_panel.add_component(model_1_label)
 
         # Add the updated routine from the first model to the content panel using get_updated_routine
@@ -339,7 +339,7 @@ class Courses(CoursesTemplate):
 
         # Add a label for the updated routine from the second model
         model_2_label = Label(
-            text='Updated Routine from 2nd Model', align='left')
+            text='Updated Routine from 2nd Model', align='left', bold=True)
         model_2_panel.add_component(model_2_label)
 
         # Add the updated routine from the second model to the content panel using get_updated_routine
@@ -357,7 +357,7 @@ class Courses(CoursesTemplate):
 
             # Add a label for the day to the day panel
             day_label = Label(border="1px solid black", text=day,
-                              width='80px', align="left", font_size="3")
+                              width='80px', align="left", font_size="3", bold=True)
             day_label.tag.style = "border-right: 1px solid black;"
             day_panel.add_component(day_label)
 
