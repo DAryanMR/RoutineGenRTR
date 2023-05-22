@@ -67,11 +67,16 @@ class Courses(CoursesTemplate):
         for i, courses in enumerate(courses_by_semester):
             label = Label(text=f"Semester {i+1}",
                           font_size="16", align="center")
-            columns[i].add_component(label)
+            sem_title_panel = ColumnPanel(border="1px solid #90EE90")
+            sem_title_panel.add_component(label)
+            columns[i].add_component(sem_title_panel)
+            course_title_panel = ColumnPanel(border="1px solid #90EE90")
+            columns[i].add_component(course_title_panel)
             for course in courses:
                 checkbox = anvil.CheckBox(text=course)
                 checkbox.set_event_handler("change", self.check_box_changed)
-                columns[i].add_component(checkbox)
+                # columns[i].add_component(checkbox)
+                course_title_panel.add_component(checkbox)
 
         for column in columns:
             layout.add_component(column)
