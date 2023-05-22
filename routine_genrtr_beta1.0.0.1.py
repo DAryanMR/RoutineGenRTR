@@ -442,7 +442,7 @@ def find_alt_section(ov_crs_list, free_time_list):
                     curr_st_, curr_end_ = int(''.join(curr_time.split(
                         '-')[0].split(':'))), int(''.join(curr_time.split('-')[1].split(':')))
                     curr_tar_ = curr_crs + ' ' + curr_sec
-                    
+
                     # Check if the same course's other section is already present
                     if curr_crs in course_sections:
                         if curr_sec in course_sections[curr_crs]:
@@ -453,7 +453,7 @@ def find_alt_section(ov_crs_list, free_time_list):
                     if curr_crs not in course_sections:
                         course_sections[curr_crs] = set()
                     course_sections[curr_crs].add(curr_sec)
-                    
+
                     for OCs in range(len(ov_crs_list)):
                         for oc in ov_crs_list[OCs]:
                             ov_crs, ov_sec = oc.split(' ')[0], oc.split(' ')[1]
