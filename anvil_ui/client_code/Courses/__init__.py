@@ -8,7 +8,25 @@ class Courses(CoursesTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
+
+        # define global course_count
+        global course_count
+        # Set course_count default 0
+        course_count = 0
+
+        # Set count label
+        count_label_msg = f"Selected: {course_count}"
+        self.selected_count_label = Label(text=count_label_msg, font_size='16')
+
+        # Call the load_courses method on initialization
         self.load_courses()
+
+    def update_selected_count(self):
+        course_count = len(self.checked_values)
+        count_label_msg = f"Selected: {course_count}"
+        self.selected_count_label.text = count_label_msg
+        self.count_panel.clear()
+        self.count_panel.add_component(self.selected_count_label)        
 
     def on_resize(self, **event_args):
         # Code for handling resize event goes here
@@ -17,6 +35,14 @@ class Courses(CoursesTemplate):
     def load_courses(self):
         init_label = Label(text='List of all courses from Semester 1-8', font_size='20')
         self.content_panel.add_component(init_label)
+
+        # Add count label to count_panel
+        self.count_panel = ColumnPanel(width="auto")
+        self.count_panel.add_component(self.selected_count_label)
+        
+        # # Create the selected_count_label and add it to the content_panel
+        # # self.selected_count_label = Label(text="Selected: 0", font_size='16')
+        self.content_panel.add_component(self.count_panel)
     
         self.checked_values = set() # Create an empty list to store the values of checked checkboxes
         self.generate.visible = False  
@@ -47,7 +73,7 @@ class Courses(CoursesTemplate):
             layout.add_component(column)
     
         self.content_panel.add_component(layout)
-
+    
     def check_box_changed(self, **event_args):
         # Get the sender checkbox using the 'sender' key in the event_args dictionary
         sender = event_args['sender']
@@ -56,10 +82,75 @@ class Courses(CoursesTemplate):
             self.checked_values.add(sender.text)
         else:
             self.checked_values.discard(sender.text)
+        
+        # # Update the selected_count_label with the number of checked boxes
+        self.update_selected_count()
     
         # Set the visibility of the button based on whether a checkbox is checked
         self.generate.visible = len(self.checked_values) > 0
 
+    def get_total_courses(self):
+        default_routine_init_label = Label(text="### Before analyzing ###")
+        global default_total_list
+        default_total_list = [] 
+        for checkbox_value in self.checked_values:
+            default_total_list.append(checkbox_value)
+        
+        # Convert the list to a string with comma-separated values
+        courses_str = ", ".join(default_total_list)
+      
+        # Create a label widget with the formatted string
+        courses_label_msg = f"Courses: {courses_str}"
+        courses_label = Label(text=courses_label_msg)
+        # print(courses_label.text)
+
+        # Get length of default_total_list
+        default_total_count = len(default_total_list)
+
+        # Create a label widget for default count
+        courses_count_msg = f"Total Courses = {default_total_count}"
+        courses_count = Label(text=courses_count_msg)
+        # print(courses_count.text)
+
+        # Get overlapped courses
+        merged_list = overlapped_courses_1 + overlapped_courses_2
+        output_list = []
+        
+        for sublist in merged_list:
+            for item in sublist:
+                if item not in output_list:
+                    output_list.append(item)
+        
+        output_string = ', '.join(output_list)
+        ov_msg_str = f"Overlapped Courses: {output_string}"
+
+        # Create a label widget to store ov_msg_str
+        ov_msg_label = Label(text=ov_msg_str)
+        # print(ov_msg_label.text)
+
+        # Get ov_crs_count and store it on a label
+        total_ov_crs = len(overlapped_courses_1) + len(overlapped_courses_2)
+        ov_crs_cnt_str = f"Total Overlapped Courses = {total_ov_crs}"
+        ov_crs_cnt_label = Label(text=ov_crs_cnt_str)
+        # print(ov_crs_cnt_label.text)
+
+        # Add a label for actual courses
+        actual_crs_cnt = default_total_count - total_ov_crs
+        actual_crs_str = f"Actual Courses = {actual_crs_cnt}"
+        actual_crs_label = Label(text=actual_crs_str)
+        # print(actual_crs_label.text)
+
+        # Create and store all these info on a ColumnPanel
+        global before_update_info_panel
+        before_update_info_panel = ColumnPanel(border="1px solid black", width="100%")
+        before_update_info_panel.add_component(default_routine_init_label)
+        before_update_info_panel.add_component(courses_label)
+        before_update_info_panel.add_component(courses_count)
+        before_update_info_panel.add_component(ov_msg_label)
+        before_update_info_panel.add_component(ov_crs_cnt_label)
+        before_update_info_panel.add_component(actual_crs_label)
+
+  
     def generate_click(self, **event_args):
         """This method is called when the button is clicked""" 
         self.content_panel.clear()
@@ -71,7 +162,10 @@ class Courses(CoursesTemplate):
         global unique_checked_values, dj_day, dj_course, dj_msg, final_routine, comparison_list, final_time_list, overlapped_courses_1, overlapped_courses_2
         # Get the daily routine and error messages
         dj_day, dj_course, dj_msg, final_routine, comparison_list, final_time_list, overlapped_courses_1, overlapped_courses_2 = anvil.server.call('generate_default_routine', list(self.checked_values))
-        
+
+        # Call the default_routine_msg function
+        self.get_total_courses()
+      
         # Create the daily routine panel
         routine_panel = ColumnPanel(border="1px solid black", width="100%")
         routine_panel.tag.style = "resize: both; overflow: auto; border-collapse:collapse;"
@@ -145,16 +239,62 @@ class Courses(CoursesTemplate):
         self.content_panel.clear()
         self.content_panel.add_component(container_panel)
 
+    def get_new_routine_info(self, schedule):
+        # Defining necessary global variables
+        global model_info_panel
+        # Extracting values from the dictionary
+        new_routine_values = []
+        missing_courses = []
+        for day in schedule:
+            for item in schedule[day]:
+                if item[0] not in new_routine_values:
+                    new_routine_values.append(item[0])
+        # print(new_routine_values)
+        
+        # Convert the list to a string with comma-separated values
+        new_courses_str = ", ".join(new_routine_values)
+      
+        # Create a label widget with the formatted string
+        new_courses_label_msg = f"Courses: {new_courses_str}"
+        new_courses_label = Label(text=new_courses_label_msg)
+        # print(new_courses_label.text)
+      
+        # Create a label widget for missing courses
+        missing_courses = [course for course in default_total_list if course.split()[0] not in [c.split()[0] for c in new_routine_values]]
+        if missing_courses != []:
+            missing_courses_str = ", ".join(missing_courses)
+            missing_courses_label_msg = f"Missing Courses: {missing_courses_str}"
+            missing_courses_label = Label(text=missing_courses_label_msg)
+            # print(missing_courses_label.text)
+        
+        # Create a label widget for new course count
+        new_total_count = len(default_total_list) - len(missing_courses)
+        new_courses_count_msg = f"Total Courses = {new_total_count}"
+        new_crs_count_label = Label(text=new_courses_count_msg)
+        # print(new_crs_count_label.text)
+
+        # Add models' course info to Content Panel
+        model_info_panel = ColumnPanel(border="1px solid black", width="100%")
+        model_info_panel.clear()
+        model_info_panel.add_component(new_courses_label)
+        if missing_courses != []:
+            model_info_panel.add_component(missing_courses_label)
+        model_info_panel.add_component(new_crs_count_label)
+        self.content_panel.add_component(model_info_panel)
+  
     def fix_button_click(self, final_routine, **event_args):
         # Clear the content panel
         self.content_panel.clear()
+
+        # Add the before_update_info_panel on content panel
+        self.content_panel.add_component(before_update_info_panel)
     
         # Call the 'create_structures' server function to generate the required data structures
         trial_routine_1, trial_routine_2, comp_list_1, comp_list_2, fn_time_l_1, fn_time_l_2, test_res_1, test_res_2, dr_1, dr_2 = anvil.server.call('create_structures', final_routine, comparison_list, final_time_list)
     
         # Generate the updated routine, comparison list, and final time list for the first model
         trial_routine_1, test_res_1, comp_list_1 = anvil.server.call('generate_updated_routine', trial_routine_1, overlapped_courses_1, comp_list_1, fn_time_l_1, test_res_1)
-        
+      
         # Add a column panel with a border to contain the updated routine from the first model
         model_1_panel = ColumnPanel(border="1px solid black")
         self.content_panel.add_component(model_1_panel)
@@ -165,6 +305,8 @@ class Courses(CoursesTemplate):
         
         # Add the updated routine from the first model to the content panel using get_updated_routine
         self.get_updated_routine(trial_routine_1, model_1_panel)
+        self.get_new_routine_info(trial_routine_1)
+
     
         # Add a column panel with a border to separate the two updated routines
         separator_panel = ColumnPanel(border="1px solid black")
@@ -172,7 +314,7 @@ class Courses(CoursesTemplate):
     
         # Generate the updated routine, comparison list, and final time list for the second model
         trial_routine_2, test_res_2, comp_list_2 = anvil.server.call('generate_updated_routine', trial_routine_2, overlapped_courses_2, comp_list_2, fn_time_l_2, test_res_2)
-        
+      
         # Add a column panel with a border to contain the updated routine from the second model
         model_2_panel = ColumnPanel(border="1px solid black")
         self.content_panel.add_component(model_2_panel)
@@ -183,6 +325,7 @@ class Courses(CoursesTemplate):
         
         # Add the updated routine from the second model to the content panel using get_updated_routine
         self.get_updated_routine(trial_routine_2, model_2_panel)
+        self.get_new_routine_info(trial_routine_2)
 
     def get_updated_routine(self, routine, c_panel):
         # Create a new data row panel to hold the updated routine
@@ -213,7 +356,7 @@ class Courses(CoursesTemplate):
     
             # Add the day panel to the updated data row panel
             updated_data_row_panel.add_component(day_panel)
-    
+        
         # Add the updated data row panel to the container panel
         c_panel.add_component(updated_data_row_panel)
 
@@ -221,6 +364,8 @@ class Courses(CoursesTemplate):
       """This method is called when the button is clicked"""
       self.back_to_courses.visible = False
       self.content_panel.clear()
+      self.count_panel.clear()
+      self.selected_count_label.text = "Selected: 0"
       self.load_courses()
       
 
