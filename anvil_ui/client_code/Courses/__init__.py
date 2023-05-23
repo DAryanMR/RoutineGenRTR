@@ -99,7 +99,8 @@ class Courses(CoursesTemplate):
         self.generate.visible = len(self.checked_values) > 0
 
     def get_total_courses(self):
-        default_routine_init_label = Label(text="### Before analyzing ###", bold=True)
+        default_routine_init_label = Label(
+            text="### Before analyzing ###", bold=True)
         global default_total_list
         default_total_list = []
         for checkbox_value in self.checked_values:
@@ -194,14 +195,28 @@ class Courses(CoursesTemplate):
 
             # Add a panel with a border for each course inline with the day label to the day panel
             for c in course:
-                course_panel = ColumnPanel(
-                    border="1px solid black", width="100%")
+                course_panel = ColumnPanel(width="100%")
                 course_panel.tag.style = "flex: 1;"
+
+                # Check if the current course is overlapping with another course
+                overlap = False
+                for msg in dj_msg[day]:
+                    if c.split()[0] in msg and c.split()[1] in msg:
+                        overlap = True
+                        break
+
+                # Set border color based on overlap status
+                if overlap:
+                    course_panel.border = "1px solid red"
+                else:
+                    course_panel.border = "1px solid black"
+
+                # Add label to course panel
                 label = Label(text=c, align="center", font_size="3")
                 course_panel.add_component(label)
+
                 day_panel.add_component(course_panel)
 
-            # Add the day panel to the routine panel
             routine_panel.add_component(day_panel)
 
         # Set the style of the routine panel using .tag
@@ -223,7 +238,8 @@ class Courses(CoursesTemplate):
 
         # If error panel is empty let user know that their routine is all set
         if len(err_panel.get_components()) == 0:
-            h_label = Label(text='Reports', align='left', font_size="5", bold=True)
+            h_label = Label(text='Reports', align='left',
+                            font_size="5", bold=True)
             h_msg = "You're routine is all set."
             healthy_label = Label(text=h_msg, align='left', font_size="5")
             report_section = ColumnPanel()
@@ -231,7 +247,8 @@ class Courses(CoursesTemplate):
             report_section.add_component(healthy_label)
         # else add the err_panel to reports section
         else:
-            h_label = Label(text='Overlaps', align='left', font_size="5", bold=True)
+            h_label = Label(text='Overlaps', align='left',
+                            font_size="5", bold=True)
             report_section = ColumnPanel()
             report_section.add_component(h_label)
             report_section.add_component(err_panel)
@@ -279,7 +296,8 @@ class Courses(CoursesTemplate):
         if missing_courses != []:
             missing_courses_str = ", ".join(missing_courses)
             missing_courses_label_msg = f"Missing Courses: {missing_courses_str}"
-            missing_courses_label = Label(text=missing_courses_label_msg, foreground="red")
+            missing_courses_label = Label(
+                text=missing_courses_label_msg, foreground="red")
             # print(missing_courses_label.text)
 
         # Create a label widget for new course count
