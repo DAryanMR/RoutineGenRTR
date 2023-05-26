@@ -254,9 +254,9 @@ base_routine = {
            [[("PR", "10:00-11:30")], [("ML", "11:30-13:00")]],
            ],
     "8C1": [[[("MLL", "14:30-16:00")], [("PRL", "16:00-17:30")]],
+            [[(), ()]],
+            [[(), ()]],
             [[("CCCL", "10:00-11:30")], [("CCL", "11:30-13:00")]],
-            [[(), ()]],
-            [[(), ()]],
             [[(), ()]],
             ],
     "8C2": [[[("CCL", "14:30-17:30")]],
@@ -494,14 +494,17 @@ def find_alt_section(ov_crs_list, free_time_list):
     # For each courses in CountRecommend[course] and their counts
     for Cs in cmp_list_:
         fn_cnt = 0
+        print(Cs, cmp_list_.count(Cs), curr_list_.count(Cs))
         if cmp_list_.count(Cs) == curr_list_.count(Cs):
             rec_crs_[Cs] = True
         recs_list = list(rec_crs_.keys())
         for w in range(len(recs_list)):
+            print("w.. ", w)
             if Cs.split(' ')[0] in recs_list[w].split(' ')[0]:
                 fn_cnt += 1
         if fn_cnt > 1:
             del rec_crs_[Cs]
+            # print(Cs, rec_crs_[Cs])
     return rec_crs_, curr_list_, cmp_list_, exception_list
 # Adding updated courses
 
