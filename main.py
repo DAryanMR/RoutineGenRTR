@@ -5,6 +5,6 @@ from controllers.course_controller import *
 from controllers.gui_controller import *
 
 
-anvil.server.connect("server_P7MKQDTZXWFQ5LDPKJSHHUJI-VCA3RIYMG7DSECB3")
+anvil.server.connect("app_security_key_here")
 
 anvil.server.wait_forever()
