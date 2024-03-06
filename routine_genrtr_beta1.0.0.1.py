@@ -193,7 +193,7 @@ base_routine = {
            [[("CGIP", "8:30-10:00")], [("NNFL", "11:30-13:00")]],
            [[("CGIP", "8:30-10:00")], [("NCS", "11:30-13:00")]],
            [[("CGIPL", "8:30-10:00")], [("NNFLL", "10:00-11:30")],
-            [("NNFL", "13:00-14:30")]],
+            [("NNFL", "11:30-13:00")]],
            ],
     "7B": [[[("TWP", "10:30-12:30")], [("NCS", "13:00-14:30")]],
            [[("TC", "9:30-11:30")], [("CGIP", "13:00-14:30")]],
@@ -206,7 +206,7 @@ base_routine = {
     "7C": [[[("CS", "10:00-11:30")], [("TWP", "12:30-14:30")], [("CSL", "14:30-17:30")]],
            [[("CGIPL", "8:30-10:00")], [("NNFLL", "10:00-11:30")],
             [("NNFL", "11:30-13:00")]],
-           [[("NNFLL", "8:30-10:00")], [("NCS", "11:30-13:00")],
+           [[("NCS", "11:30-13:00")],
             [("CGIP", "13:00-14:30")]],
            [[("TC", "9:30-11:30")], [("CGIP", "11:30-13:00")]],
            [[("NNFL", "10:00-11:30")], [("NCS", "11:30-13:00")],
@@ -230,7 +230,7 @@ base_routine = {
            ],
     "8A1": [[[(), ()]],
             [[("CCL", "11:30-14:30")]],
-            [[("MLL", "11:30-13:00")], [("CCCL", "13:00-14:30")]],
+            [[("MLL", "11:30-13:00")], [("CCCL", "13:00-16:00")]],
             [[("PRL", "8:30-10:00")]],
             [[(), ()]],
             ],
@@ -265,10 +265,10 @@ base_routine = {
            [[("ML", "8:30-10:00")]],
            [[("PR", "11:30-13:00")]],
            ],
-    "8C1": [[[("MLL", "14:30-16:00")], [("PRL", "16:00-17:30")]],
+    "8C1": [[[("MLL", "11:30-13:00")], [("PRL", "16:00-17:30")]],
             [[(), ()]],
             [[(), ()]],
-            [[("CCCL", "10:00-11:30")], [("CCL", "11:30-13:00")]],
+            [[("CCCL", "10:00-11:30")], [("CCL", "11:30-14:30")]],
             [[(), ()]],
             ],
     "8C2": [[[("CCL", "14:30-17:30")]],
@@ -383,7 +383,6 @@ test_results = {
 def CalculateFreeTimeWeek(week):
     for day, times in week.items():
         test_results[day] = CalculateFreeTimeDay(times)
-        # print(f'{day}:', test_results[day])
 # Removing overlapped courses
 
 
@@ -472,51 +471,24 @@ def find_alt_section(ov_crs_list, free_time_list):
                                                             free_time_list[d].append(
                                                                 [curr_end_, free_time_end_])
                                                     break
-                                                # else:
-                                                #     if len(exception_list) <= 0:
-                                                #         if curr_st_ >= (free_time_st_ - 30) and curr_end_ <= free_time_end_:
-                                                #             curr_tar_ = curr_crs + ' ' + curr_sec
-                                                #             cmp_list_.append(
-                                                #                 curr_tar_)
-                                                #             exception_list.append(
-                                                #                 curr_tar_)
-                                                #             if curr_end_ == free_time_end_:
-                                                #                 free_time_list[d].remove(
-                                                #                     free_time_list[d][t])
-                                                #             else:
-                                                #                 free_time_list[d][t] = [
-                                                #                     curr_end_, free_time_end_]
-                                                #             break
-                                                #         elif curr_st_ >= free_time_st_ and curr_end_ <= (free_time_end_ + 30):
-                                                #             curr_tar_ = curr_crs + ' ' + curr_sec
-                                                #             cmp_list_.append(
-                                                #                 curr_tar_)
-                                                #             exception_list.append(
-                                                #                 curr_tar_)
-                                                #             if curr_st_ == free_time_st_:
-                                                #                 free_time_list[d].remove(
-                                                #                     free_time_list[d][t])
-                                                #             else:
-                                                #                 free_time_list[d][t] = [
-                                                #                     free_time_st_, curr_st_]
-                                                #             break
     '''
     identifying recommended courses
     '''
     # For each courses in CountRecommend[course] and their counts
     for Cs in cmp_list_:
         fn_cnt = 0
-        print(Cs, cmp_list_.count(Cs), curr_list_.count(Cs))
+        print("Comparing count..", Cs, cmp_list_.count(Cs), curr_list_.count(Cs))
         if cmp_list_.count(Cs) == curr_list_.count(Cs):
             rec_crs_[Cs] = True
         recs_list = list(rec_crs_.keys())
         for w in range(len(recs_list)):
-            print("w.. ", w)
+            print("Finding duplicates..", w)
             if Cs.split(' ')[0] in recs_list[w].split(' ')[0]:
                 fn_cnt += 1
         if fn_cnt > 1:
             del rec_crs_[Cs]
-            # print(Cs, rec_crs_[Cs])
+            print("Deleting duplicates..", Cs)
+    print("Final Recommendation:\n", rec_crs_)
     return rec_crs_, curr_list_, cmp_list_, exception_list
 # Adding updated courses
 
@@ -525,6 +497,7 @@ def append_alt_crs(rec__crs__, routine, ftl):
     '''
     appending recommended-courses to the routine
     '''
+    print("Appending alternate courses..")
     # For every courses marked as Recommended
     for k in rec__crs__.keys():
         # take that instance of course and section
@@ -636,7 +609,7 @@ def append_alt_crs(rec__crs__, routine, ftl):
             routine[day][time_steps][1] = proper_time
 
     return routine, ftl
-# Creting a printout of the dummy-routine
+# Creating a printout of the dummy-routine
 
 
 def print_out(routine, dr):
@@ -654,14 +627,13 @@ def print_out(routine, dr):
 
 # ! pip3 install anvil-uplink
 
-# anvil.server.connect("BXTNSNYRACX3BJ7TR7536LXV-KVOQB6A2U6UCKI5D")
-anvil.server.connect("server_P7MKQDTZXWFQ5LDPKJSHHUJI-VCA3RIYMG7DSECB3")
 
 # Sending list of all courses to client-side
 
 
 @anvil.server.callable
 def get_all_courses():
+    print("User at Generator's doorstep")
     sem_list = list(base_routine.keys())
     all_courses = []
     for i in range(8):
@@ -791,6 +763,7 @@ def get_all_courses():
 
 @anvil.server.callable
 def generate_default_routine(user_choice):
+    print("Generating default routine for user")
     sections, courses = [], []
     dj_day, dj_course = [], []
     for items in user_choice:
@@ -974,6 +947,7 @@ def generate_default_routine(user_choice):
             dj_msg[day] = err_msg
             dj_day.append(day)
             dj_course.append(dummy_routine[day])
+    print("Default routine:\n", final_routine)
     return dj_day, dj_course, dj_msg, final_routine, comparison_list, final_time_list, overlapped_courses_1, overlapped_courses_2
 
 # Creating structures for calculation
@@ -1084,6 +1058,7 @@ def create_structures(fr, cl, ftl):
 
 @anvil.server.callable
 def generate_updated_routine(trout, oc, cl, ftl, tres):
+    print("Generating updated routine for user")
     trout, oc, cl, ftl = rem__ov__crs(trout, oc, cl, ftl)
     tres = copy_free_time_slots(cl, tres)
     copy_tres = {}
@@ -1092,7 +1067,11 @@ def generate_updated_routine(trout, oc, cl, ftl, tres):
     rec_crs_, curr_list_, cmp_list_, exception_list = find_alt_section(
         oc, copy_tres)
     trout, ftl = append_alt_crs(rec_crs_, trout, ftl)
+    print("Updated routine:\n", trout)
     return trout, tres, cl
 
+
+# anvil.server.connect("BXTNSNYRACX3BJ7TR7536LXV-KVOQB6A2U6UCKI5D")
+anvil.server.connect("server_P7MKQDTZXWFQ5LDPKJSHHUJI-VCA3RIYMG7DSECB3")
 
 anvil.server.wait_forever()
